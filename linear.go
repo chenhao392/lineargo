@@ -27,7 +27,7 @@ type Model struct {
 	// 	int *label;		/* label of each class */
 	// 	double bias;
 	// };
-	cModel *C.struct_model
+	CModel *C.struct_model
 }
 
 // Wrapper for the `train` function in liblinear.
@@ -97,7 +97,7 @@ func Train(X, y *mat64.Dense, bias float64, solverType int, c_, p, eps float64, 
 		C.int(nrWeight), weightLabelPtr, weightPtr)
 
 	return &Model{
-		cModel: model,
+		CModel: model,
 	}
 }
 
@@ -107,7 +107,7 @@ func Predict(model *Model, X *mat64.Dense) *mat64.Dense {
 	cX := mapCDouble(X.RawMatrix().Data)
 	y := mat64.NewDense(nRows, 1, nil)
 	result := doubleToFloats(C.call_predict(
-		model.cModel, &cX[0], C.int(nRows), C.int(nCols)), nRows)
+		model.CModel, &cX[0], C.int(nRows), C.int(nCols)), nRows)
 	y.SetCol(0, result)
 	return y
 }
@@ -115,13 +115,13 @@ func Predict(model *Model, X *mat64.Dense) *mat64.Dense {
 // double predict_probability(const struct model *model_, const struct feature_node *x, double* prob_estimates);
 func PredictProba(model *Model, X *mat64.Dense) *mat64.Dense {
 	nRows, nCols := X.Dims()
-	nrClasses := int(C.get_nr_class(model.cModel))
+	nrClasses := int(C.get_nr_class(model.CModel))
 
 	cX := mapCDouble(X.RawMatrix().Data)
 	y := mat64.NewDense(nRows, nrClasses, nil)
 
 	result := doubleToFloats(C.call_predict_proba(
-		model.cModel, &cX[0], C.int(nRows), C.int(nCols), C.int(nrClasses)),
+		model.CModel, &cX[0], C.int(nRows), C.int(nCols), C.int(nrClasses)),
 		nRows*nrClasses)
 	for i := 0; i < nRows; i++ {
 		y.SetRow(i, result[i*nrClasses:(i+1)*nrClasses])
@@ -146,7 +146,7 @@ func Accuracy(y_true, y_pred *mat64.Dense) float64 {
 }
 
 func SaveModel(model *Model, filename string) {
-	rtn := C.save_model(C.CString(filename), model.cModel)
+	rtn := C.save_model(C.CString(filename), model.CModel)
 	if int(rtn) != 0 {
 		errStr := fmt.Sprintf("Error Code `%v` when trying to save model", int(rtn))
 		fmt.Println(errStr)
@@ -161,6 +161,6 @@ func LoadModel(filename string) *Model {
 		panic(errors.New(errStr))
 	}
 	return &Model{
-		cModel: model,
+		CModel: model,
 	}
 }
