@@ -30,7 +30,7 @@ type Model struct {
 	CModel *C.struct_model
 }
 
-func (f *Model) Nfeature() int {
+func (f *Model.CModel) Nfeature() int {
 	return int(f.nr_feature)
 }
 func (f *Model) Nclass() int {
