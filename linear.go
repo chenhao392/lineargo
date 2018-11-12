@@ -30,6 +30,20 @@ type Model struct {
 	CModel *C.struct_model
 }
 
+func (f Model) Nfeature() int {
+	return int(f.nr_feature)
+}
+func (f Model) Nclass() int {
+	return int(f.nr_class)
+}
+func (f Model) Bias() float64 {
+	return float64(f.bias)
+}
+func (f Model) W() []float64 {
+	w := doubleToFloats(f.w)
+	return w
+}
+
 // Wrapper for the `train` function in liblinear.
 //
 // `model* train(const struct problem *prob, const struct parameter *param);`
