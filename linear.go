@@ -30,16 +30,16 @@ type Model struct {
 	CModel *C.struct_model
 }
 
-func (f Model) Nfeature() int {
+func (f *Model) Nfeature() int {
 	return int(f.nr_feature)
 }
-func (f Model) Nclass() int {
+func (f *Model) Nclass() int {
 	return int(f.nr_class)
 }
-func (f Model) Bias() float64 {
+func (f *Model) Bias() float64 {
 	return float64(f.bias)
 }
-func (f Model) W() []float64 {
+func (f *Model) W() []float64 {
 	w := doubleToFloats(f.w)
 	return w
 }
