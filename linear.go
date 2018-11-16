@@ -40,7 +40,7 @@ func (f *Model) Bias() float64 {
 	return float64(f.cModel.bias)
 }
 func (f *Model) W() []float64 {
-	w := doubleToFloats(f.cModel.w, int(f.cModel.nr_feature))
+	w := doubleToFloats2(f.cModel.w, int(f.cModel.nr_feature))
 	return w
 }
 
