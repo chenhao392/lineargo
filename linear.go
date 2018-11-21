@@ -116,7 +116,7 @@ func Train(X, y *mat64.Dense, bias float64, solverType int, c_, p, eps float64, 
 }
 
 //get the trained weight only from the model
-func TrainAndGetW(X, y *mat64.Dense, bias float64, solverType int, c_, p, eps float64, classWeights map[int]float64) *mat64.Dense {
+func TrainAndGetW(X, y *mat64.Dense, bias float64, solverType int, c_, p, eps float64, classWeights map[int]float64) []float64 {
 	var weightLabelPtr *C.int
 	var weightPtr *C.double
 
@@ -149,9 +149,7 @@ func TrainAndGetW(X, y *mat64.Dense, bias float64, solverType int, c_, p, eps fl
 		C.int(nrWeight), weightLabelPtr, weightPtr)
 
 	w := doubleToFloats(model.w, int(model.nr_feature))
-	wMat := mat64.NewDense(int(model.nr_feature), 1, nil)
-	wMat.SetCol(0, w)
-	return wMat
+	return w
 }
 
 // double predict(const struct model *model_, const struct feature_node *x);
