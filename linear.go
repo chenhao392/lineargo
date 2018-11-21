@@ -148,7 +148,7 @@ func TrainAndGetW(X, y *mat64.Dense, bias float64, solverType int, c_, p, eps fl
 		C.int(solverType), C.double(c_), C.double(p), C.double(eps),
 		C.int(nrWeight), weightLabelPtr, weightPtr)
 
-	w := doubleToFloats2(model.w, int(model.nr_feature))
+	w := doubleToFloats(model.cModel.w, int(model.cModel.nr_feature))
 	return w
 }
 
