@@ -40,8 +40,12 @@ func (f *Model) Bias() float64 {
 	return float64(f.cModel.bias)
 }
 func (f *Model) W() []float64 {
-	w := doubleToFloats2(f.cModel.w, int(f.cModel.nr_feature))
+	w := doubleToFloats(f.cModel.w, int(f.cModel.nr_feature))
 	return w
+}
+func (f *Model) Label() int {
+	label := int(f.cModel.label)
+	return label
 }
 
 // Wrapper for the `train` function in liblinear.
@@ -113,45 +117,6 @@ func Train(X, y *mat64.Dense, bias float64, solverType int, c_, p, eps float64, 
 	return &Model{
 		cModel: model,
 	}
-}
-
-//get the trained weight only from the model
-func TrainAndGetW(X, y *mat64.Dense, bias float64, solverType int, c_, p, eps float64, classWeights map[int]float64) *mat64.Dense {
-	var weightLabelPtr *C.int
-	var weightPtr *C.double
-
-	nRows, nCols := X.Dims()
-
-	cX := mapCDouble(X.RawMatrix().Data)
-	cY := mapCDouble(y.ColView(0).RawVector().Data)
-
-	nrWeight := len(classWeights)
-	weightLabel := []C.int{}
-	weight := []C.double{}
-
-	for key, val := range classWeights {
-		weightLabel = append(weightLabel, (C.int)(key))
-		weight = append(weight, (C.double)(val))
-	}
-
-	if nrWeight > 0 {
-		weightLabelPtr = &weightLabel[0]
-		weightPtr = &weight[0]
-	} else {
-		weightLabelPtr = nil
-		weightPtr = nil
-	}
-
-	model := C.call_train(
-		&cX[0], &cY[0],
-		C.int(nRows), C.int(nCols), C.double(bias),
-		C.int(solverType), C.double(c_), C.double(p), C.double(eps),
-		C.int(nrWeight), weightLabelPtr, weightPtr)
-
-	w := doubleToFloats(model.w, int(model.nr_feature))
-	wMat := mat64.NewDense(int(model.nr_feature), 1, nil)
-	wMat.SetCol(0, w)
-	return wMat
 }
 
 // double predict(const struct model *model_, const struct feature_node *x);

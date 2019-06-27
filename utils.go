@@ -33,11 +33,11 @@ func doubleToFloats(in *C.double, size int) []float64 {
 	return out
 }
 
-func doubleToFloats2(in *C.double, size int) []float64 {
-	outD := (*[1 << 30]C.double)(unsafe.Pointer(in))[:size:size]
-	out := make([]float64, size, size)
-	for i := 0; i < size; i++ {
-		out[i] = float64(outD[i])
-	}
-	return out
-}
+//func doubleToFloats2(in *C.double, size int) []float64 {
+//	outD := (*[1 << 30]C.double)(unsafe.Pointer(in))[:size:size]
+//	out := make([]float64, size, size)
+//	for i := 0; i < size; i++ {
+//		out[i] = float64(outD[i])
+//	}
+//	return out
+//}
